@@ -1,0 +1,22 @@
+function doPost(e) {
+  var spreadsheetId = "1BLPSNeR9B31cs8XBt6jwU9r7CpE6dP9-scj0OHHYTIg"; // ID của Google Sheets
+  var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+  var sheet = spreadsheet.getActiveSheet();
+
+  // Ghi log dữ liệu nhận được
+  Logger.log(JSON.stringify(e.parameters));
+
+  var name = e.parameters.name ? e.parameters.name[0] : ""; // Họ và tên
+  var dishType = e.parameters['dish-type'] ? e.parameters['dish-type'][0] : ""; // Loại trà
+  var dish = e.parameters.dish ? e.parameters.dish[0] : ""; // Món ăn
+  var price = parseFloat(e.parameters.price ? e.parameters.price[0] : 0); // Giá
+  var quantity = parseInt(e.parameters.quantity ? e.parameters.quantity[0] : 0); // Số lượng
+
+  // Tính tổng số tiền
+  var total = price * quantity;
+
+  // Ghi vào Google Sheets
+  sheet.appendRow([name, dishType, dish, price, quantity, new Date(), total]);
+
+  return ContentService.createTextOutput("Order received successfully.");
+}

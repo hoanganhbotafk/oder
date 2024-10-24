@@ -1,0 +1,137 @@
+body {
+    font-family: Arial, sans-serif; /* Font chữ chung cho toàn bộ trang */
+    margin: 0;
+    padding: 0;
+    color: #333; /* Màu chữ mặc định */
+}
+
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Để video ở phía sau các phần tử khác */
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo video bao phủ toàn bộ */
+}
+
+.container {
+    position: relative;
+    z-index: 1; /* Đưa nội dung này lên trên video */
+    max-width: 340px; /* Đặt chiều rộng lớn hơn một chút để chứa nội dung dễ hơn */
+    margin: 50px auto; /* Thêm khoảng cách (margin-top) để di chuyển xuống dưới */
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.9); /* Nền mờ cho container */
+    border-radius: 15px; /* Bo góc cho container */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3); /* Đổ bóng cho container */
+}
+
+h1 {
+    text-align: center;
+    color: #4A4A4A; /* Màu tiêu đề */
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px; /* Khoảng cách giữa label và input */
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: calc(100% - 22px); /* Đảm bảo chiều rộng vừa với container */
+    padding: 10px;
+    margin-bottom: 15px; /* Khoảng cách dưới input */
+    border: 1px solid #ccc; /* Đường viền input */
+    border-radius: 5px; /* Bo góc cho input */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Đổ bóng cho input */
+    font-size: 16px; /* Kích thước chữ trong input */
+    box-sizing: border-box; /* Đảm bảo padding không tăng chiều rộng */
+}
+
+p {
+    font-weight: bold; /* Chữ đậm cho phần giá và tổng */
+    margin: 10px 0; /* Khoảng cách trên và dưới */
+}
+
+button {
+    background-color: #28a745; /* Màu nền nút */
+    color: white; /* Màu chữ nút */
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px; /* Bo góc cho nút */
+    cursor: pointer; /* Thay đổi con trỏ khi hover */
+    font-size: 16px; /* Kích thước chữ trong nút */
+    width: 100%; /* Đặt chiều rộng nút bằng 100% */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền khi hover */
+}
+
+button:hover {
+    background-color: #218838; /* Màu khi hover */
+}
+
+/* Modal */
+.modal {
+    display: none; /* Ẩn modal mặc định */
+    position: fixed;
+    z-index: 10; /* Lớn hơn cả video và container */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;  
+    background-color: rgba(0,0,0,0.7); /* Nền mờ khi mở modal */
+}
+
+/* Nội dung modal */
+.modal-content {
+    background-color: #ffffff; /* Nền khung màu trắng */
+    margin: auto; /* Căn giữa modal */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 280px; /* Đặt chiều rộng nhỏ hơn cho modal */
+    height: auto; /* Chiều cao tự động */
+    border-radius: 15px; /* Bo góc tròn cho modal */
+    text-align: center; /* Canh giữa nội dung trong modal */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3); /* Đổ bóng cho modal */
+    position: relative; /* Để điều chỉnh vị trí hiển thị */
+    top: 20%; /* Đặt modal cách phía trên 20% */
+}
+
+/* Nút đóng modal */
+.close, .close-summary {
+    color: #aaa; /* Màu chữ cho nút gần cửa sổ */
+    float: right; /* Nút đóng ở phía trên bên phải */
+    font-size: 28px; /* Kích thước của nút đóng */
+    font-weight: bold; /* Chữ đậm cho nút đóng */
+}
+
+.close:hover,
+.close-summary:hover,
+#confirm-button:hover,
+#cancel-button:hover {
+    color: red; /* Đổi màu khi hover */
+    text-decoration: none; /* Bỏ gạch chân */
+    cursor: pointer; /* Thay đổi con trỏ khi hover */
+}
+
+#confirm-button,
+#cancel-button {
+    background-color: #007bff; /* Màu nền nút xác nhận và hủy */
+    font-weight: normal; /* Thay đổi trọng số chữ trong nút */
+    margin: 5px; /* Khoảng cách giữa các nút trong modal */
+    padding: 10px 20px; /* Padding cho nút */
+    border-radius: 5px; /* Bo góc cho nút */
+}
+
+#confirm-button:hover,
+#cancel-button:hover {
+    background-color: #0056b3; /* Đổi màu khi hover */
+    color: white; /* Màu chữ */
+}

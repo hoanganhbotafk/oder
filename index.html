@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Đồ Ăn</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="backgroud.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="container">
+        <h1>Đặt Đồ Ăn</h1>
+        <form id="order-form" class="form-animate">
+            <label for="name">Họ Và Tên:</label>
+<input type="text" id="name" name="name" required>
+        
+            <label for="dish-type">Loại Trà:</label>
+            <select id="dish-type" name="dish-type" required>
+                <option value="">-- Chọn Đồ Uống --</option>
+                <option value="Sinh Tố">Sinh Tố</option>
+                <option value="Nước Ép">Nước Ép</option>
+                <option value="Sữa Chua">Sữa Chua</option>
+                <option value="Trà">Trà</option>
+                <option value="Khác">Khác</option>
+            </select>
+        
+            <label for="dish">Món Ăn:</label>
+            <select id="dish" name="dish" required>
+                <option value="">-- Chọn Món --</option>
+            </select>
+        
+            <label for="price">Giá:</label>
+            <input type="text" id="price" name="price" readonly>
+        
+            <label for="quantity">Số Lượng:</label>
+            <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+        
+            <p id="total-price" style="font-weight: bold;">Tổng: 0 VNĐ</p>
+        
+            <button type="button" id="order-button">Đặt Hàng</button>
+        </form>
+    </div>
+
+    <!-- Modal cho thông báo tổng đơn hàng -->
+    <div id="summaryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-summary">&times;</span>
+            <h2>Tổng Đơn Hàng</h2>
+            <p id="summary-message"></p>
+            <button id="confirm-button">Xác Nhận</button>
+            <button id="cancel-button">Hủy</button>
+        </div>
+    </div>
+
+    <!-- Modal thông báo đơn hàng thành công -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="modal-message"></p>
+        </div>
+    </div>
+
+    <!-- Thêm phần tử audio để phát âm thanh -->
+    <audio id="notification-sound" src="bell.mp3"></audio>
+
+    <script>
+        const modal = document.getElementById('myModal');
+        const span = document.getElementsByClassName("close")[0];
+        const modalMessage = document.getElementById('modal-message');
+        const notificationSound = document.getElementById('notification-sound');
+
+        // Modal tổng đơn hàng
+        const summaryModal = document.getElementById('summaryModal');
+        const closeSummary = document.getElementsByClassName("close-summary")[0];
+        const summaryMessage = document.getElementById('summary-message');
+
+        // Mảng chứa các món ăn và giá
+        const dishes = {
+            "Sinh Tố": {
+                "-- Sinh Tố --":0,
+                "Sinh Tố Bơ": 25000,
+                "Sinh Tố Dâu Tây": 25000,
+                "Sinh Tố Mãng Cầu": 25000,
+                "Sinh Tố Dâu Chuối": 20000,
+                "Sinh Tố Chanh Tuyết Bạc Hà trân châu": 20000,
+                "Sinh Tố Chuối": 20000,
+                "Sinh Tố Đu đủ": 15000,
+                "Sinh Tố Chanh Leo": 15000,
+                "Sinh Tố Dưa Lưới": 15000,
+                "Sinh Tố Chanh Tuyết Bạc Hà": 15000,
+                "Sinh Tố Chanh tuyết": 15000,
+            },
+            "Nước Ép": {
+                "Cóc": 15000,
+                "Ổi": 15000,
+                "Lê": 15000,
+                "Dứa": 15000,
+                "Cà Rốt": 15000,
+                "Dưa Hấu": 15000,
+                "Cóc + ổi": 15000,
+                "Cóc + dứa": 15000,
+                "Táo": 20000,
+                "Cam": 20000,
+                "Lựu": 20000,
+                "Cam + cà rốt": 20000,
+                "Dưa Lưới": 20000,
+                "Rau Má Đậu Xanh": 20000,
+
+            },
+
+            "Sữa Chua": {
+                "Sữa chua đánh đá": 20000,
+                "Sữa chua mát cha": 20000,
+                "Sữa chua việt quất": 20000,
+                "Sữa chua Ca Cao": 20000,
+                "Sữa chua Milo": 20000,
+                "Sữa tươi trân châu đường đen": 20000,
+                "Sữa chua bạc hà": 20000,
+                "Sữa chua đào": 20000,
+                "Sữa chua dâu tây": 20000,
+                "Sữa chua mít": 20000,
+                "Sữa chua hoa quả dầm": 20000,
+                "Milo dầm trân châu": 15000,
+            },
+            "Trà": {
+                "Trà Mãng Cầu": 25000,
+                "Trà chanh trân châu": 15000,
+                "Trà quất trân châu": 15000,
+                "Trà chanh leo": 15000,
+                "Sữa chua hoa quả dầm": 20000,
+                "Trà Đào": 15000,
+                "Trà dâu tây": 15000,
+                "trứng gà nướng": 6000,
+                "CÓ SIZE SIÊU TO KHỔNG LỒ":0,
+            },
+            "Khác": {
+                "Trà Vải": 15000,
+                "Trà Ổi Hồng": 15000,
+                "Trà Sâm Bí Đao": 15000,
+                "Quất Lắc Sữa Nha Đam": 20000,
+                "Café Sữa Tươi": 20000,
+            },
+            "Đồ Ăn Vặt": {
+                "Xoài Lắc": 20000,
+                "Cóc Lắc": 20000,
+            }
+        };
+
+        // Thay đổi món ăn và giá khi loại trà được chọn
+        document.getElementById('dish-type').addEventListener('change', function() {
+            const dishSelect = document.getElementById('dish');
+            dishSelect.innerHTML = ""; // Xóa nội dung hiện tại của danh sách món ăn
+            
+            const selectedType = this.value;
+            if (selectedType && dishes[selectedType]) {
+                for (const [item, price] of Object.entries(dishes[selectedType])) {
+                    const option = document.createElement('option');
+                    option.value = item;
+                    option.textContent = item;
+                    dishSelect.appendChild(option);
+                }
+            }
+        });
+
+        // Hiển thị giá khi món ăn được chọn
+        document.getElementById('dish').addEventListener('change', function() {
+            updatePrice();
+        });
+
+        // Cập nhật giá tổng khi số lượng thay đổi
+        document.getElementById('quantity').addEventListener('input', function() {
+            updateTotalPrice();
+        });
+
+        function updatePrice() {
+            const selectedDish = document.getElementById('dish').value;
+            const selectedType = document.getElementById('dish-type').value;
+            const price = selectedType ? (dishes[selectedType][selectedDish] || 0) : 0;
+            document.getElementById('price').value = price; // Hiển thị giá vào ô input
+            updateTotalPrice(); // Cập nhật tổng giá khi giá món ăn thay đổi
+        }
+
+        function updateTotalPrice() {
+            const quantity = document.getElementById('quantity').value;
+            const price = document.getElementById('price').value || 0;
+            const totalAmount = price * quantity;
+            document.getElementById('total-price').innerText = `Tổng: ${totalAmount} VNĐ`;
+        }
+
+        document.getElementById('order-button').addEventListener('click', function() {
+            const name = document.getElementById('name').value;
+            const dish = document.getElementById('dish').value;
+            const quantity = document.getElementById('quantity').value;
+            const price = document.getElementById('price').value || 0;
+            const totalAmount = price * quantity;
+
+            // Cập nhật thông báo tổng đơn hàng
+            summaryMessage.innerText = `Bạn đã chọn món: ${dish}\nSố lượng: ${quantity}\nThành tiền: ${totalAmount} VNĐ`;
+            summaryModal.style.display = "block"; // Hiện modal tổng đơn hàng
+        });
+
+        closeSummary.onclick = function() {
+            summaryModal.style.display = "none"; // Đóng modal tổng đơn hàng
+        }
+
+        document.getElementById('confirm-button').addEventListener('click', function() {
+            const form = document.getElementById('order-form');
+            var formData = new FormData(form);
+            // Thêm giá vào FormData
+            formData.append('price', document.getElementById('price').value);
+
+            fetch('https://script.google.com/macros/s/AKfycbzd2Q5dLiMbETrc4pIL29_X8w2xPIChaQz9FKS0C6BCN_dyUoh6_YCnrkQPmkluDMK_mQ/exec', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Phát âm thanh thông báo
+                notificationSound.play();
+
+                // Thiết lập thông điệp cho modal thành công
+                modalMessage.innerText = `Bạn đã đặt hàng thành công sản phẩm: ${formData.get('dish')} (Số lượng: ${formData.get('quantity')})`;
+                form.reset(); // Làm trống form sau khi gửi
+                summaryModal.style.display = "none"; // Đóng modal tổng đơn hàng
+                modal.style.display = "block"; // Hiện modal đặt hàng thành công
+            })
+            .catch(error => console.error(error));
+        });
+
+        // Hủy đơn hàng
+        document.getElementById('cancel-button').addEventListener('click', function() {
+            summaryModal.style.display = "none"; // Đóng modal tổng đơn hàng
+        });
+
+        // Khi người dùng nhấn vào nút đóng (×), đóng modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Khi người dùng nhấn vào bất kỳ đâu bên ngoài modal, đóng modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+            if (event.target == summaryModal) {
+                summaryModal.style.display = "none"; // Đóng modal tổng đơn hàng nếu nhấp ra ngoài
+            }
+        }
+    </script>
+</body>
+</html>
